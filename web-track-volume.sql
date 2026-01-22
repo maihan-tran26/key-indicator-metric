@@ -1,13 +1,20 @@
-
 /**** Script Start ****/ 
 WITH C1 AS (
     SELECT
         interaction_date_yy
         , interaction_date_mm
         , CASE 
-            WHEN DATE_TRUNC('month', DATE_FROM_PARTS(interaction_date_yy, interaction_date_mm, 1)) = DATE_TRUNC('month', CURRENT_DATE()) THEN '1. current_month'
-            WHEN DATE_TRUNC('month', DATE_FROM_PARTS(interaction_date_yy, interaction_date_mm, 1)) = DATE_TRUNC('month', DATEADD(month, -1, CURRENT_DATE())) THEN '2. last_month'
-            WHEN DATE_TRUNC('month', DATE_FROM_PARTS(interaction_date_yy, interaction_date_mm, 1)) = DATE_TRUNC('month', DATEADD(year, -1, CURRENT_DATE())) THEN '3. last_year'
+WHEN DATE_TRUNC('month', DATE_FROM_PARTS(interaction_date_yy, interaction_date_mm, 1))
+         = DATE_TRUNC('month', DATEADD(month, -1, CURRENT_DATE()))
+        THEN '1. last_month'
+ 
+    WHEN DATE_TRUNC('month', DATE_FROM_PARTS(interaction_date_yy, interaction_date_mm, 1))
+         = DATE_TRUNC('month', DATEADD(month, -2, CURRENT_DATE()))
+        THEN '2. month_before_last'
+ 
+    WHEN DATE_TRUNC('month', DATE_FROM_PARTS(interaction_date_yy, interaction_date_mm, 1))
+         = DATE_TRUNC('month', DATEADD(year, -1, DATEADD(month, -1, CURRENT_DATE())))
+        THEN '3. last_month_last_year'
             END AS record_of_interest
         , CASE
                 WHEN top_funnels ='API_Brightway' AND funnel = 'Affiliate_Remarketing_Single' then 'PQ'
@@ -59,7 +66,7 @@ WITH C1 AS (
                 WHEN top_funnels ='Search_NB_FA' AND funnel = 'FA_OMF' then 'ITA'
                 WHEN top_funnels ='Search_NB_PQ' AND funnel = 'PQ_OMF' then 'ITA'
                 WHEN top_funnels ='Search_Other_PQ' AND funnel = 'PQ_OMF' then 'ITA'
-                ELSE 'Others'
+                ELSE 'Other'
                 END AS funnel_type 
         , CASE 
                 WHEN top_funnels ='API_Brightway' AND funnel = 'Affiliate_Remarketing_Single' then '6. BrightWay_CrossBuy'
@@ -103,7 +110,7 @@ WITH C1 AS (
                 WHEN top_funnels ='Logged_OAM_PQ' AND funnel = 'PQ_OAM' then '6. Logged_OAM_ITA'
                 WHEN top_funnels ='Other' AND funnel = 'NCPQ_Email' then '7. Others'
                 WHEN top_funnels ='Other' AND funnel = 'EA_Remarketing' then '3. Remarketing'
-                WHEN top_funnels ='Other' AND funnel = 'Others' then '7. Others'
+                WHEN top_funnels ='Other' AND funnel = 'Others' then 'Other'
                 WHEN top_funnels ='Search_B_FA' AND funnel = 'FA_OMF' then '7. Others'
                 WHEN top_funnels ='Search_B_PQ' AND funnel = 'PQ_OMF' then '1. SEM'
                 WHEN top_funnels ='Search_Direct_FA' AND funnel = 'FA_OMF' then '7. Others'
@@ -111,7 +118,7 @@ WITH C1 AS (
                 WHEN top_funnels ='Search_NB_FA' AND funnel = 'FA_OMF' then '7. Others'
                 WHEN top_funnels ='Search_NB_PQ' AND funnel = 'PQ_OMF' then '1. SEM'
                 WHEN top_funnels ='Search_Other_PQ' AND funnel = 'PQ_OMF' then '2. SEO'
-                ELSE 'Others' END AS final_category 
+                ELSE 'Other' END AS final_category 
             , SUM(visitors_cookie) AS visitors
             , SUM(hard_submit_ssn) AS hard_submits
             , SUM(hard_approve_ssn) AS hard_approvals 
@@ -137,10 +144,10 @@ WITH C1 AS (
         , MAX(CASE WHEN metric_rank = 1 then visitors END) AS current_visitors 
         , MAX(CASE WHEN metric_rank = 2 then visitors END) AS last_month_visitors
         , MAX(CASE WHEN metric_rank = 3 then visitors END) AS last_year_visitors
-        , MAX(CASE WHEN metric_rank = 1 then hard_submits END) AS current_hard_submits
-        , MAX(CASE WHEN metric_rank = 2 then hard_submits END) AS current_hard_submits
+        , MAX(CASE WHEN metric_rank = 1 then hard_submits END) AS curr_hard_submits
+        , MAX(CASE WHEN metric_rank = 2 then hard_submits END) AS last_month_hard_submits
         , MAX(CASE WHEN metric_rank = 3 then hard_submits END) AS last_year_hard_submits
-        , MAX(CASE WHEN metric_rank = 1 then hard_approvals END) AS current_hard_approvals
+        , MAX(CASE WHEN metric_rank = 1 then hard_approvals END) AS curr_hard_approvals
         , MAX(CASE WHEN metric_rank = 2 then hard_approvals END) AS last_month_hard_approvals 
         , MAX(CASE WHEN metric_rank = 3 then hard_approvals END) AS last_year_hard_approvals
     FROM c2 
