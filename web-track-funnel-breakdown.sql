@@ -110,7 +110,7 @@ WHEN DATE_TRUNC('month', DATE_FROM_PARTS(interaction_date_yy, interaction_date_m
                 WHEN top_funnels ='Logged_OAM_PQ' AND funnel = 'PQ_OAM' then '6. Logged_OAM_ITA'
                 WHEN top_funnels ='Other' AND funnel = 'NCPQ_Email' then '7. Others'
                 WHEN top_funnels ='Other' AND funnel = 'EA_Remarketing' then '3. Remarketing'
-                WHEN top_funnels ='Other' AND funnel = 'Others' then 'Others'
+                WHEN top_funnels ='Other' AND funnel = 'Others' then 'Other'
                 WHEN top_funnels ='Search_B_FA' AND funnel = 'FA_OMF' then '7. Others'
                 WHEN top_funnels ='Search_B_PQ' AND funnel = 'PQ_OMF' then '1. SEM'
                 WHEN top_funnels ='Search_Direct_FA' AND funnel = 'FA_OMF' then '7. Others'
@@ -118,7 +118,7 @@ WHEN DATE_TRUNC('month', DATE_FROM_PARTS(interaction_date_yy, interaction_date_m
                 WHEN top_funnels ='Search_NB_FA' AND funnel = 'FA_OMF' then '7. Others'
                 WHEN top_funnels ='Search_NB_PQ' AND funnel = 'PQ_OMF' then '1. SEM'
                 WHEN top_funnels ='Search_Other_PQ' AND funnel = 'PQ_OMF' then '2. SEO'
-                ELSE 'Others' END AS final_category 
+                ELSE 'Other' END AS final_category 
             , SUM(visitors_cookie) AS visitors
             , SUM(hard_submit_ssn) AS hard_submits
             , SUM(hard_approve_ssn) AS hard_approvals 
